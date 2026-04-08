@@ -2326,6 +2326,17 @@ def build_trending_topics(max_topics=10):
 
 trending_topics = build_trending_topics()
 
+# ── Section color palette ──
+SECTION_COLORS = {
+    "us":       "#C0392B",
+    "mideast":  "#D35400",
+    "world":    "#1A6FA8",
+    "tech":     "#1E4FD8",
+    "business": "#8B6914",
+    "sports":   "#1A7A4A",
+    "culture":  "#7B2D8B",
+}
+
 # ── Breaking banner setup ──
 _now = time.time()
 hot_items = sorted(
@@ -4063,4 +4074,3 @@ except Exception as e:
 
 print("\nNUZU bot finished successfully.")
 print("Files saved to current directory.")
-
