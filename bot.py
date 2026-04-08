@@ -2326,6 +2326,7 @@ def build_trending_topics(max_topics=10):
 
 trending_topics = build_trending_topics()
 
+html_parts = []
 html_parts.append(f"""
     body.light-mode .float-mode-btn{{background:#EBF0FA;color:#000;border-color:#D1D9E8}}
     @media(max-width:900px){{.float-mode-btn{{display:block}}}}
@@ -3929,7 +3930,7 @@ html_parts.append(f"""
       <button class="set-homepage-btn" onclick="document.getElementById('homepage-instructions').style.display=document.getElementById('homepage-instructions').style.display==='block'?'none':'block'">&#127968; Set NUZU as My Homepage</button>
       <div id="homepage-instructions" class="homepage-instructions" style="display:none">
         <strong>How to set NUZU as your homepage:</strong><br>
-        <span class="hp-browser"><b>Chrome:</b> Settings &rarr; On startup &rarr; Open a specific page &rarr; Add <code>https://theseanmitchell.github.io/TheMitchellPost/</code></span><br>
+        <span class="hp-browser"><b>Chrome:</b> Settings &rarr; On startup &rarr; Open a specific page &rarr; Add <code>https://theseanmitchell.github.io/NUZU/</code></span><br>
         <span class="hp-browser"><b>Firefox:</b> Settings &rarr; Home &rarr; Homepage &rarr; Custom URLs &rarr; paste the URL above</span><br>
         <span class="hp-browser"><b>Safari:</b> Preferences &rarr; General &rarr; Homepage &rarr; paste the URL above</span><br>
         <span class="hp-browser"><b>Edge:</b> Settings &rarr; Start, home, and new tabs &rarr; Open these pages &rarr; Add the URL above</span>
@@ -3960,7 +3961,7 @@ try:
     rss = ET.Element("rss", version="2.0")
     channel = ET.SubElement(rss, "channel")
     ET.SubElement(channel, "title").text = "NUZU News"
-    ET.SubElement(channel, "link").text = "https://theseanmitchell.github.io/TheMitchellPost/"
+    ET.SubElement(channel, "link").text = "https://theseanmitchell.github.io/NUZU/"
     ET.SubElement(channel, "description").text = "NUZU: Real News in Real Time. Breaking headlines from 200+ trusted sources."
     ET.SubElement(channel, "language").text = "en-us"
     ET.SubElement(channel, "lastBuildDate").text = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
@@ -4007,7 +4008,7 @@ try:
     feed_doc = {{
         "version":       "1.1",
         "title":         "NUZU News",
-        "home_page_url": "https://theseanmitchell.github.io/TheMitchellPost/",
+        "home_page_url": "https://theseanmitchell.github.io/NUZU/",
         "description":   "NUZU: Real News in Real Time",
         "updated":       datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "items":         feed_items,
