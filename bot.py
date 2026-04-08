@@ -3800,6 +3800,10 @@ document.addEventListener('DOMContentLoaded', function() {{
 """)
 
 # ====================== FOOTER ======================
+_now_utc = datetime.utcnow()
+_now_pdt = _now_utc + PDT_OFFSET
+update_time = _now_pdt.strftime("%-I:%M %p PDT, %B %-d, %Y")
+
 html_parts.append(f"""
 <footer class="site-footer">
   <button class="back-to-top-btn" onclick="window.scrollTo({{top:0,behavior:'smooth'}})">&#8679; Back to Top</button>
@@ -3964,6 +3968,13 @@ html_parts.append(f"""
 """)
 
 # ====================== WRITE OUTPUT FILES ======================
+all_items_flat = sorted(
+    us_breaking + us_recent + middle_breaking + middle_recent +
+    world_breaking + world_recent + tech_breaking + tech_recent +
+    business_breaking + business_recent + sports_breaking + sports_recent +
+    culture_breaking + culture_recent,
+    key=lambda x: x[0], reverse=True
+)
 html = "".join(html_parts)
 print(f"HTML generated: {len(html):,} characters")
 
