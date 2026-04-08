@@ -4048,8 +4048,8 @@ try:
         "items":         feed_items,
     }}
     with open(FEED_JSON, "w", encoding="utf-8") as fj:
-        _json.dump(feed_doc, fj, ensure_ascii=False, indent=2)
-    print(f"SUCCESS: feed.json saved ({{len(feed_items)}} items)")
+        _json.dump(feed_doc, fj, ensure_ascii=True, indent=2)
+    print(f"SUCCESS: feed.json saved ({len(feed_items)} items)")
 except Exception as e:
     print(f"WARNING: feed.json not saved: {{str(e)}}")
 
