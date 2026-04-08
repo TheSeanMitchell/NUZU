@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUZU News — Offline</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0D1B4B;color:#fff;font-family:Arial,sans-serif;
+     display:flex;flex-direction:column;align-items:center;
+     justify-content:center;min-height:100vh;padding:20px;text-align:center}
+.logo{font-size:4em;font-weight:900;letter-spacing:0.05em;
+      background:linear-gradient(135deg,#fff 60%,#7EB3FF);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      margin-bottom:16px}
+.tagline{color:#7EB3FF;font-size:1em;margin-bottom:40px;letter-spacing:0.06em}
+h1{font-size:1.4em;margin-bottom:12px;color:#fff}
+p{color:#8899CC;font-size:0.95em;max-width:400px;line-height:1.7;margin-bottom:32px}
+.retry-btn{background:#1E4FD8;color:#fff;border:none;padding:14px 32px;
+           border-radius:6px;font-size:1em;font-weight:bold;cursor:pointer;
+           letter-spacing:0.04em;transition:background 0.2s}
+.retry-btn:hover{background:#2563EB}
+.offline-icon{font-size:3em;margin-bottom:20px;opacity:0.6}
+</style>
+</head>
+<body>
+<div class="offline-icon">📡</div>
+<div class="logo">NUZU</div>
+<div class="tagline">REAL NEWS IN REAL TIME</div>
+<h1>You're offline</h1>
+<p>NUZU couldn't reach the news feeds right now. Check your connection and try again — we'll be right here with the latest headlines.</p>
+<button class="retry-btn" onclick="window.location.reload()">↻ Try Again</button>
+</body>
+</html>
