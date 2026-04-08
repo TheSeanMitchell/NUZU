@@ -3976,10 +3976,12 @@ all_items_flat = sorted(
     key=lambda x: x[0], reverse=True
 )
 html = "".join(html_parts)
+# Strip any surrogate characters that would break UTF-8 encoding
+html = html.encode("utf-8", errors="replace").decode("utf-8")
 print(f"HTML generated: {len(html):,} characters")
 
 try:
-    with open(INDEX_HTML, "w", encoding="utf-8") as f:
+    with open(INDEX_HTML, "w", encoding="utf-8", errors="replace") as f:
         f.write(html)
     print(f"SUCCESS: index.html saved to {{INDEX_HTML}}")
 except Exception as e:
