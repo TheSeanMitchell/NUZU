@@ -2326,6 +2326,16 @@ def build_trending_topics(max_topics=10):
 
 trending_topics = build_trending_topics()
 
+# ── Breaking banner setup ──
+_now = time.time()
+hot_items = sorted(
+    [it for it in (us_breaking + middle_breaking + world_breaking +
+                   tech_breaking + business_breaking + sports_breaking + culture_breaking)
+     if (_now - it[0]) <= 1800],
+    key=lambda x: x[0], reverse=True
+)
+show_breaking_banner = len(hot_items) > 0
+
 html_parts = []
 html_parts.append(f"""
     body.light-mode .float-mode-btn{{background:#EBF0FA;color:#000;border-color:#D1D9E8}}
