@@ -19,17 +19,25 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install feedparser anthropic
+        run: pip install feedparser
 
       - name: Run bot
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python bot.py
+        run: |
+          echo "=== Starting bot ==="
+          python bot.py
+          echo "=== Bot finished ==="
+          echo "--- Files written ---"
+          ls -lh index.html feed.xml feed.json _headers 2>/dev/null || echo "Some files missing!"
+          echo "--- index.html size check ---"
+          wc -c index.html
 
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html feed.xml feed.json _headers || true
+          git add index.html feed.xml feed.json _headers
+          echo "--- git status ---"
+          git status
+          git diff --cached --stat
           git diff --cached --quiet || git commit -m "Auto-refresh $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
