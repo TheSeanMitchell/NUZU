@@ -2362,6 +2362,12 @@ html_parts.append(f"""<!DOCTYPE html>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="description" content="NUZU News: Real News in Real Time. Breaking headlines from 200+ trusted sources across US, World, Middle East, Tech, Business, Sports and Culture.">
     <meta name="theme-color" content="#0D1B4B">
+    <script>if("serviceWorker"in navigator){{navigator.serviceWorker.register("/NUZU/sw.js").catch(function(){{}});}}</script>
+    <link rel="apple-touch-icon" href="/NUZU/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NUZU News">
+    <meta name="mobile-web-app-capable" content="yes">
     <style>
     /* ── CSS Custom Properties (Design Tokens) ── */
     :root {{
@@ -2387,7 +2393,7 @@ html_parts.append(f"""<!DOCTYPE html>
         font-family: Arial, sans-serif;
         line-height: 1.6;
         padding-top: 48px;
-        font-size: 15px;
+        font-size: clamp(15px, 1.05vw, 18px);
     }}
     body.large-text {{ font-size: 19px; }}
 
@@ -2513,7 +2519,7 @@ html_parts.append(f"""<!DOCTYPE html>
 
     /* ── Hero Masthead ── */
     .nuzu-hero {{
-        text-align: center; padding: 32px 20px 20px;
+        text-align: center; padding: 14px 20px 10px;
         background: linear-gradient(180deg, var(--nuzu-navy) 0%, var(--nuzu-dark) 100%);
         border-bottom: 1px solid var(--nuzu-border);
     }}
@@ -2528,8 +2534,8 @@ html_parts.append(f"""<!DOCTYPE html>
         text-transform: uppercase; margin-top: 6px;
     }}
     @media (max-width: 900px) {{
-        .nuzu-hero {{ padding: 20px 16px 14px; }}
-        .nuzu-hero-wordmark {{ font-size: 2.8em; }}
+        .nuzu-hero {{ padding: 10px 16px 8px; }}
+        .nuzu-hero-wordmark {{ font-size: 2.4em; }}
     }}
 
     /* ── Video Banner ── */
@@ -3096,6 +3102,174 @@ html_parts.append(f"""<!DOCTYPE html>
     .homepage-instructions code {{ color: var(--nuzu-light); font-size: 0.9em; }}
     .hp-browser {{ display: block; }}
 
+    /* ── Waiting Room Overlay (hidden by default) ── */
+    #wr-overlay {{
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 3000;
+        background: #000;
+        flex-direction: column;
+    }}
+    #wr-overlay.wr-open {{ display: flex; }}
+
+    #wr-header {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        background: var(--nuzu-navy);
+        border-bottom: 2px solid var(--nuzu-blue);
+        flex-shrink: 0;
+        height: 44px;
+        gap: 12px;
+    }}
+    #wr-header-left {{ display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }}
+    #wr-title {{
+        font-size: 0.88em; font-weight: 900; letter-spacing: 0.06em;
+        color: var(--nuzu-white); flex-shrink: 0;
+    }}
+    #wr-subtitle {{
+        font-size: 0.72em; color: var(--nuzu-muted);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }}
+    #wr-close-btn {{
+        background: var(--nuzu-blue); border: none; border-radius: 4px;
+        color: #fff; font-size: 0.78em; font-weight: bold;
+        padding: 6px 16px; cursor: pointer; flex-shrink: 0;
+        letter-spacing: 0.04em; transition: background 0.15s;
+    }}
+    #wr-close-btn:hover {{ background: var(--nuzu-blue-l); }}
+    #wr-close-btn kbd {{
+        background: rgba(255,255,255,0.15); border-radius: 3px;
+        padding: 1px 5px; font-size: 0.85em; font-family: monospace;
+    }}
+
+    /* ── Waiting Room Grid: 5 cols × 2 rows = 10 feeds ── */
+    #wr-grid {{
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 3px;
+        background: #000;
+        padding: 3px;
+        overflow: hidden;
+    }}
+    .wr-cell {{
+        position: relative;
+        background: #0a0a0a;
+        overflow: hidden;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: outline 0.15s;
+    }}
+    .wr-cell:hover {{ outline: 2px solid var(--nuzu-blue); outline-offset: -2px; }}
+    .wr-cell.wr-audio-active {{ outline: 3px solid var(--nuzu-blue); outline-offset: -3px; }}
+    .wr-cell iframe {{
+        width: 100%; height: 100%; border: none; display: block;
+        pointer-events: all;
+    }}
+    .wr-cell-num {{
+        position: absolute; bottom: 6px; left: 8px;
+        background: rgba(0,0,0,0.65); color: rgba(255,255,255,0.7);
+        font-size: 0.62em; padding: 2px 7px; border-radius: 10px;
+        font-weight: bold; letter-spacing: 0.06em;
+        pointer-events: none; user-select: none;
+    }}
+
+    /* ── Mobile: Most Reported On full-width makeover ── */
+    @media (max-width: 900px) {{
+        .top-stories-2col {{
+            flex-direction: column;
+            gap: 0;
+        }}
+        .ts-col {{
+            width: 100%;
+            padding: 0 !important;
+        }}
+        .ts-divider-left {{
+            border-left: none !important;
+            border-top: 1px solid var(--nuzu-border);
+            padding-top: 12px !important;
+            margin-top: 12px;
+        }}
+        .top-story-card {{
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }}
+        .top-story-card .ts-headline {{
+            font-size: 1em;
+            line-height: 1.55;
+            display: block;
+            margin-top: 4px;
+        }}
+        .ts-section-tag {{
+            font-size: 0.68em !important;
+        }}
+        .ts-badge {{
+            font-size: 0.68em !important;
+        }}
+        .ts-link.mro-jump {{
+            display: block;
+            margin-top: 4px;
+            margin-left: 0;
+            font-size: 0.78em;
+        }}
+        .top-stories-strip {{
+            padding: 0 12px;
+        }}
+        .top-stories-title {{
+            font-size: 0.68em;
+        }}
+        /* Better tap targets for mobile headlines */
+        .headline {{
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+        }}
+        .link {{
+            font-size: 0.9em;
+            padding: 2px 6px;
+        }}
+        .bookmark-btn {{
+            font-size: 1em;
+            padding: 2px 8px;
+        }}
+        /* Mobile cluster improvements */
+        .cluster {{
+            padding: 12px 12px 6px 12px;
+        }}
+        /* Mobile search bar */
+        .search-bar-wrap {{
+            padding: 10px 12px;
+            gap: 8px;
+        }}
+        .search-bar-wrap input {{
+            font-size: 16px !important; /* prevent iOS zoom */
+        }}
+        /* Tighten nav on mobile */
+        .sticky-nav a.nav-link {{
+            padding: 0 8px;
+            font-size: 0.72em;
+        }}
+    }}
+
+    /* ── PWA / Play Store: prevent text size adjust ── */
+    html {{
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }}
+
+    /* ── Waiting Room: mobile shows 2×5 grid (portrait) ── */
+    @media (max-width: 900px) {{
+        #wr-grid {{
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+        }}
+        #wr-subtitle {{ display: none; }}
+    }}
+
+    
         </style>
 </head>
 <body>
@@ -3106,7 +3280,7 @@ html_parts.append("""
   <div id="wr-header">
     <div id="wr-header-left">
       <span id="wr-title">&#9654; NUZU Waiting Room</span>
-      <span id="wr-subtitle">Live News Feeds &mdash; click any feed to unmute</span>
+      <span id="wr-subtitle">Click any feed to unmute &bull; Press ESC to exit</span>
     </div>
     <button id="wr-close-btn">&#x2715;&nbsp;Exit&nbsp;<kbd>ESC</kbd></button>
   </div>
@@ -3128,9 +3302,11 @@ html_parts.append("""
       <p>Loading article...</p>
     </div>
     <div class="nuzu-reader-blocked" id="nuzu-reader-blocked">
-      <h3>Article blocked by publisher</h3>
-      <p>This publisher does not allow in-app viewing. Tap below to read the full article in your browser.</p>
-      <button class="nuzu-reader-btn primary" id="nuzu-reader-blocked-open">Open in Browser</button>
+      <div style="font-size:2em;margin-bottom:8px;">&#128240;</div>
+      <h3>Open Full Article</h3>
+      <p>This publisher restricts in-app previewing.<br>Tap below to read the complete article in your browser &mdash; it opens instantly.</p>
+      <button class="nuzu-reader-btn primary" id="nuzu-reader-blocked-open" style="margin-top:8px;padding:12px 28px;font-size:1em;">&#128279; Read Full Article</button>
+      <p style="margin-top:12px;font-size:0.76em;color:var(--nuzu-dim);">Opens in a new tab &bull; Free to read</p>
     </div>
     <iframe id="nuzu-reader-iframe"
       sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
@@ -3186,7 +3362,7 @@ html_parts.append(f"""
     </button>
   </div>
 </nav>
-<button class="float-mode-btn" id="float-mode-btn" aria-label="Toggle light/dark mode">&#127769;</button>
+<button class="float-mode-btn" id="float-mode-btn" aria-label="Toggle light/dark mode">&#9790;</button>
 """)
 
 # ── Breaking banner ──
@@ -3238,18 +3414,7 @@ html_parts.append("""
 </div>
 """)
 
-# ── Top ad slot ──
-html_parts.append("""
-<div style="max-width:1400px;margin:0 auto;padding:12px 20px 0 20px;">
-  <div class="ad-slot" id="ad-top">
-    <span class="ad-slot-label">Advertisement</span>
-    <div class="ad-slot-inner">
-      &#128226; Your Ad Here &mdash;
-      <a href="mailto:TheSeanMitchell@protonmail.com?subject=NUZU Advertising Inquiry">Partner with NUZU</a>
-    </div>
-  </div>
-</div>
-""")
+# ── Top ad slot moved below search bar ──
 
 # ====================== MRO STRIP ======================
 TAB_ORDER = ["US","Middle East","World","Tech","Business","Sports","Culture"]
@@ -3406,6 +3571,16 @@ ts_html += '''<div class="search-bar-wrap">
   <span id="search-result-count" style="font-size:0.8em;color:var(--nuzu-muted);white-space:nowrap;"></span>
 </div>\n'''
 
+ts_html += '''<div style="max-width:1400px;margin:0 auto;padding:0 20px 12px 20px;">
+  <div class="ad-slot" id="ad-top">
+    <span class="ad-slot-label">Advertisement</span>
+    <div class="ad-slot-inner">
+      &#128226; Your Ad Here &mdash;
+      <a href="mailto:TheSeanMitchell@protonmail.com?subject=NUZU Advertising Inquiry">Partner with NUZU</a>
+    </div>
+  </div>
+</div>\n\n'''
+
 ts_html += '''<!-- VIDEO BANNER desktop only -->
 <div class="banner">
   <div class="video-grid">
@@ -3530,38 +3705,38 @@ for sid in _DEFAULT_SECTION_ORDER:
 _ALL_SECTION_DATA = {
     "section-us": (
         "us-color", us_breaking, us_recent,
-        '<span class="sec-dot" style="background:#C0392B"></span>US &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#C0392B"></span>US &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#C0392B"></span>US &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#C0392B"></span>US &mdash; Daily Headlines'
     ),
     "section-mideast": (
         "mideast-color", middle_breaking, middle_recent,
-        '<span class="sec-dot" style="background:#D35400"></span>MIDDLE EAST &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#D35400"></span>MIDDLE EAST &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#D35400"></span>MIDDLE EAST &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#D35400"></span>MIDDLE EAST &mdash; Daily Headlines'
     ),
     "section-world": (
         "world-color", world_breaking, world_recent,
-        '<span class="sec-dot" style="background:#1A6FA8"></span>WORLD &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#1A6FA8"></span>WORLD &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#1A6FA8"></span>WORLD &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#1A6FA8"></span>WORLD &mdash; Daily Headlines'
     ),
     "section-tech": (
         "tech-color", tech_breaking, tech_recent,
-        '<span class="sec-dot" style="background:#1E4FD8"></span>TECH &amp; LIFE &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#1E4FD8"></span>TECH &amp; LIFE &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#1E4FD8"></span>TECH &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#1E4FD8"></span>TECH &mdash; Daily Headlines'
     ),
     "section-business": (
         "business-color", business_breaking, business_recent,
-        '<span class="sec-dot" style="background:#8B6914"></span>BUSINESS &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#8B6914"></span>BUSINESS &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#8B6914"></span>BUSINESS &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#8B6914"></span>BUSINESS &mdash; Daily Headlines'
     ),
     "section-sports": (
         "sports-color", sports_breaking, sports_recent,
-        '<span class="sec-dot" style="background:#1A7A4A"></span>SPORTS &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#1A7A4A"></span>SPORTS &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#1A7A4A"></span>SPORTS &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#1A7A4A"></span>SPORTS &mdash; Daily Headlines'
     ),
     "section-culture": (
         "culture-color", culture_breaking, culture_recent,
-        '<span class="sec-dot" style="background:#7B2D8B"></span>CULTURE &mdash; LAST 3 HOURS',
-        '<span class="sec-dot" style="background:#7B2D8B"></span>CULTURE &mdash; 24-HOUR HEADLINES'
+        '<span class="sec-dot" style="background:#7B2D8B"></span>CULTURE &mdash; Breaking News',
+        '<span class="sec-dot" style="background:#7B2D8B"></span>CULTURE &mdash; Daily Headlines'
     ),
 }
 
@@ -3746,40 +3921,56 @@ document.addEventListener('DOMContentLoaded', function() {{
   var blockedOpenBtn = document.getElementById('nuzu-reader-blocked-open');
   var currentUrl = '';
 
-  function openReader(url, title) {{
-    currentUrl = url;
-    if (titleEl) titleEl.textContent = title || 'Article';
+  // Multi-strategy reader: direct → AMP cache → blocked screen
+  var _readerStrategies = [];
+  var _readerStratIdx = 0;
+  var _readerBlockTimer = null;
+
+  function _ampUrl(url) {{
+    return 'https://www.google.com/amp/s/' + url.replace('https://', '').replace('http://', '');
+  }}
+  function _clearReaderTimers() {{
+    if (_readerBlockTimer) {{ clearTimeout(_readerBlockTimer); _readerBlockTimer = null; }}
+    iframe.onload = null; iframe.onerror = null;
+  }}
+  function _tryNextStrategy() {{
+    if (_readerStratIdx >= _readerStrategies.length) {{
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (blockedEl) blockedEl.classList.add('show');
+      return;
+    }}
+    var tryUrl = _readerStrategies[_readerStratIdx];
+    _readerStratIdx++;
+    _clearReaderTimers();
     if (loadingEl) loadingEl.style.display = 'flex';
     if (blockedEl) blockedEl.classList.remove('show');
-    iframe.src = '';
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    // Short delay then load
-    setTimeout(function() {{ iframe.src = url; }}, 100);
-    // Detect block: if iframe doesn't load within 6s show blocked message
-    var blockTimer = setTimeout(function() {{
-      if (loadingEl) loadingEl.style.display = 'none';
-      if (blockedEl) blockedEl.classList.add('show');
-    }}, 6000);
+    iframe.src = 'about:blank';
+    setTimeout(function() {{ iframe.src = tryUrl; }}, 80);
+    _readerBlockTimer = setTimeout(function() {{ _tryNextStrategy(); }}, 5000);
+    iframe.onerror = function() {{ _clearReaderTimers(); _tryNextStrategy(); }};
     iframe.onload = function() {{
-      clearTimeout(blockTimer);
-      if (loadingEl) loadingEl.style.display = 'none';
-      // Check if blocked by testing iframe content access
+      _clearReaderTimers();
       try {{
         var doc = iframe.contentDocument || iframe.contentWindow.document;
-        if (!doc || !doc.body || doc.body.innerHTML.trim() === '') {{
-          if (blockedEl) blockedEl.classList.add('show');
+        if (!doc || !doc.body || doc.body.innerHTML.trim().length < 100) {{
+          _tryNextStrategy(); return;
         }}
+        if (loadingEl) loadingEl.style.display = 'none';
       }} catch(e) {{
-        // Cross-origin block - show blocked message
-        if (blockedEl) blockedEl.classList.add('show');
+        if (loadingEl) loadingEl.style.display = 'none';
       }}
     }};
-    iframe.onerror = function() {{
-      clearTimeout(blockTimer);
-      if (loadingEl) loadingEl.style.display = 'none';
-      if (blockedEl) blockedEl.classList.add('show');
-    }};
+  }}
+
+  function openReader(url, title) {{
+    currentUrl = url;
+    _readerStratIdx = 0;
+    _clearReaderTimers();
+    _readerStrategies = [ url, _ampUrl(url) ];
+    if (titleEl) titleEl.textContent = title || 'Article';
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    _tryNextStrategy();
   }}
 
   function closeReader() {{
@@ -3952,7 +4143,7 @@ document.addEventListener('DOMContentLoaded', function() {{
       document.body.classList.remove('light-mode');
       toggle.checked = false;  // unchecked = left = dark (default)
     }}
-    if (floatBtn) floatBtn.textContent = isLight ? '\uD83C\uDF1E' : '\uD83C\uDF19';
+    if (floatBtn) floatBtn.textContent = isLight ? '\u2600' : '\u263E';
     try {{ localStorage.setItem(LKEY, isLight ? '1' : '0'); }} catch(e) {{}}
   }}
   // Respect system preference first, then stored pref, default = dark
@@ -4531,7 +4722,7 @@ html_parts.append(f"""
         <li><a href="#section-us">US News</a></li>
         <li><a href="#section-mideast">Middle East</a></li>
         <li><a href="#section-world">World</a></li>
-        <li><a href="#section-tech">Tech &amp; Life</a></li>
+        <li><a href="#section-tech">Tech</a></li>
         <li><a href="#section-business">Business</a></li>
         <li><a href="#section-sports">Sports</a></li>
         <li><a href="#section-culture">Culture</a></li>
@@ -4716,6 +4907,115 @@ try:
     print("SUCCESS: _headers written")
 except Exception as e:
     print(f"WARNING: _headers not written: {{str(e)}}")
+
+
+# ====================== PWA / PLAY STORE FILES ======================
+# Generate manifest.json for PWA / Android TWA (Google Play Store)
+MANIFEST_FILE = os.path.join(CURRENT_DIR, "manifest.json")
+try:
+    manifest = {
+        "name": "NUZU News",
+        "short_name": "NUZU",
+        "description": "Real News in Real Time — breaking headlines from 200+ trusted sources.",
+        "start_url": "/NUZU/",
+        "scope": "/NUZU/",
+        "display": "standalone",
+        "orientation": "any",
+        "theme_color": "#0D1B4B",
+        "background_color": "#070F2B",
+        "lang": "en",
+        "categories": ["news"],
+        "dir": "ltr",
+        "icons": [
+            {"src": "icons/icon-48.png",  "sizes": "48x48",   "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
+        ],
+        "shortcuts": [
+            {"name": "US News",      "url": "/NUZU/#section-us",       "description": "Latest US political news"},
+            {"name": "World",        "url": "/NUZU/#section-world",    "description": "Global news coverage"},
+            {"name": "Breaking",     "url": "/NUZU/#section-mideast",  "description": "Middle East coverage"},
+            {"name": "Business",     "url": "/NUZU/#section-business", "description": "Markets and business news"},
+        ],
+        "screenshots": [
+            {"src": "screenshots/desktop.png", "sizes": "1280x720",  "type": "image/png", "form_factor": "wide"},
+            {"src": "screenshots/mobile.png",  "sizes": "390x844",   "type": "image/png", "form_factor": "narrow"},
+        ],
+        "prefer_related_applications": False,
+    }
+    with open(MANIFEST_FILE, "w", encoding="utf-8") as mf:
+        _json.dump(manifest, mf, indent=2)
+    print(f"SUCCESS: manifest.json saved (Play Store ready)")
+except Exception as e:
+    print(f"WARNING: manifest.json not saved: {str(e)}")
+
+# Generate service worker (sw.js) for offline support + Play Store TWA
+SW_FILE = os.path.join(CURRENT_DIR, "sw.js")
+try:
+    sw_content = """// NUZU News Service Worker v1.2 — PWA / Play Store support
+const CACHE_NAME = 'nuzu-cache-v3';
+const OFFLINE_URL = '/NUZU/offline.html';
+
+// Assets to pre-cache for offline shell
+const PRE_CACHE = [
+  '/NUZU/',
+  '/NUZU/index.html',
+  '/NUZU/manifest.json',
+];
+
+self.addEventListener('install', event => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(PRE_CACHE).catch(() => {}))
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    ))
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  // Skip non-GET and cross-origin requests
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== location.origin) return;
+
+  event.respondWith(
+    fetch(event.request, { cache: 'no-cache' })
+      .then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request).then(cached => cached || caches.match('/NUZU/')))
+  );
+});
+
+// Background sync for news refresh
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'nuzu-refresh') {
+    event.waitUntil(fetch('/NUZU/feed.json').then(r => r.json()).catch(() => {}));
+  }
+});
+""";
+    with open(SW_FILE, "w", encoding="utf-8") as sf:
+        sf.write(sw_content)
+    print(f"SUCCESS: sw.js saved (service worker)")
+except Exception as e:
+    print(f"WARNING: sw.js not saved: {str(e)}")
 
 print("\nNUZU bot finished successfully.")
 print("Files saved to current directory.")
