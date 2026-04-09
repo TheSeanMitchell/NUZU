@@ -4615,9 +4615,9 @@ print(f"HTML generated: {len(html):,} characters")
 try:
     with open(INDEX_HTML, "w", encoding="utf-8", errors="replace") as f:
         f.write(html)
-    print(f"SUCCESS: index.html saved to {{INDEX_HTML}}")
+    print(f"SUCCESS: index.html saved to {INDEX_HTML}")
 except Exception as e:
-    print(f"ERROR saving index.html: {{str(e)}}")
+    print(f"ERROR saving index.html: {str(e)}")
     raise
 
 # ── Write RSS feed ──
@@ -4644,9 +4644,9 @@ try:
     ET.indent(tree, space="  ")
     with open(RSS_FILE, "wb") as rf:
         tree.write(rf, xml_declaration=True, encoding="utf-8")
-    print(f"SUCCESS: feed.xml saved ({{len(rss_items)}} items)")
+    print(f"SUCCESS: feed.xml saved ({len(rss_items)} items)")
 except Exception as e:
-    print(f"WARNING: feed.xml not saved: {{str(e)}}")
+    print(f"WARNING: feed.xml not saved: {str(e)}")
 
 # ── Write feed.json ──
 import json as _json
@@ -4663,27 +4663,27 @@ try:
     ]
     for section_name, items in sections:
         for ts, title, source, link in items:
-            feed_items.append({{
+            feed_items.append({
                 "section":   section_name,
                 "title":     title,
                 "source":    get_friendly_source(source),
                 "link":      link,
                 "published": datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            }})
+            })
     feed_items.sort(key=lambda x: x["published"], reverse=True)
-    feed_doc = {{
+    feed_doc = {
         "version":       "1.1",
         "title":         "NUZU News",
         "home_page_url": "https://theseanmitchell.github.io/NUZU/",
         "description":   "NUZU: Real News in Real Time",
         "updated":       datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "items":         feed_items,
-    }}
+    }
     with open(FEED_JSON, "w", encoding="utf-8") as fj:
         _json.dump(feed_doc, fj, ensure_ascii=True, indent=2)
     print(f"SUCCESS: feed.json saved ({len(feed_items)} items)")
 except Exception as e:
-    print(f"WARNING: feed.json not saved: {{str(e)}}")
+    print(f"WARNING: feed.json not saved: {str(e)}")
 
 # ── Write _headers ──
 try:
