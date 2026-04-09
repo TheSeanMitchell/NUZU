@@ -2348,6 +2348,597 @@ hot_items = sorted(
 show_breaking_banner = len(hot_items) > 0
 
 html_parts = []
+html_parts.append(f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUZU News &mdash; Real News in Real Time</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="alternate" type="application/rss+xml" title="NUZU News RSS Feed" href="feed.xml">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%230D1B4B'/><text x='32' y='46' font-family='Arial,sans-serif' font-size='24' font-weight='900' fill='%23FFFFFF' text-anchor='middle'>NZ</text></svg>">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="description" content="NUZU News: Real News in Real Time. Breaking headlines from 200+ trusted sources across US, World, Middle East, Tech, Business, Sports and Culture.">
+    <meta name="theme-color" content="#0D1B4B">
+    <style>
+    /* ── CSS Custom Properties (Design Tokens) ── */
+    :root {{
+        --nuzu-navy:    #070F2B;
+        --nuzu-dark:    #0D1B4B;
+        --nuzu-blue:    #1E4FD8;
+        --nuzu-blue-l:  #2563EB;
+        --nuzu-light:   #7EB3FF;
+        --nuzu-border:  #1A2A4A;
+        --nuzu-card:    #0A1535;
+        --nuzu-muted:   #5577AA;
+        --nuzu-dim:     #3A4A6A;
+        --nuzu-text:    #CDD5E0;
+        --nuzu-white:   #FFFFFF;
+    }}
+
+    /* ── Reset & Base ── */
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    html {{ scroll-behavior: smooth; }}
+    body {{
+        background: var(--nuzu-dark);
+        color: var(--nuzu-text);
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        padding-top: 48px;
+        font-size: 15px;
+    }}
+    body.large-text {{ font-size: 19px; }}
+
+    /* ── Sticky Nav ── */
+    .sticky-nav {{
+        position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+        background: var(--nuzu-navy);
+        border-bottom: 3px solid var(--nuzu-blue);
+        display: flex; align-items: center; gap: 0; height: 48px;
+        padding: 0 16px; overflow-x: auto; white-space: nowrap;
+    }}
+    .sticky-nav .site-name {{
+        font-size: 1.1em; font-weight: 900; color: var(--nuzu-white);
+        margin-right: 16px; flex-shrink: 0; letter-spacing: 0.1em;
+        text-decoration: none;
+        background: linear-gradient(135deg, #fff 60%, var(--nuzu-light));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }}
+    .sticky-nav a.nav-link {{
+        display: inline-block; padding: 0 12px; height: 48px; line-height: 48px;
+        color: var(--nuzu-muted); text-decoration: none; font-size: 0.78em;
+        font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase;
+        border-left: 3px solid transparent;
+        transition: color 0.15s, border-color 0.15s; flex-shrink: 0;
+    }}
+    .sticky-nav a.nav-link:hover {{ color: var(--nuzu-white); }}
+    .sticky-nav a.nav-link.nav-active {{ color: var(--nuzu-white); background: rgba(30,79,216,0.12); }}
+    .sticky-nav a.nav-us       {{ border-left-color: {SECTION_COLORS["us"]}; }}
+    .sticky-nav a.nav-mideast  {{ border-left-color: {SECTION_COLORS["mideast"]}; }}
+    .sticky-nav a.nav-world    {{ border-left-color: {SECTION_COLORS["world"]}; }}
+    .sticky-nav a.nav-tech     {{ border-left-color: {SECTION_COLORS["tech"]}; }}
+    .sticky-nav a.nav-business {{ border-left-color: {SECTION_COLORS["business"]}; }}
+    .sticky-nav a.nav-sports   {{ border-left-color: {SECTION_COLORS["sports"]}; }}
+    .sticky-nav a.nav-culture  {{ border-left-color: {SECTION_COLORS["culture"]}; }}
+
+    /* ── Saved Articles Nav Button ── */
+    .saved-nav-btn {{
+        background: none; border: 1px solid var(--nuzu-border);
+        border-radius: 20px; color: var(--nuzu-light);
+        font-size: 0.72em; font-weight: bold; padding: 4px 12px;
+        cursor: pointer; white-space: nowrap; margin-left: 8px;
+        letter-spacing: 0.04em; transition: border-color 0.15s, color 0.15s;
+        position: relative; flex-shrink: 0;
+    }}
+    .saved-nav-btn:hover {{ border-color: var(--nuzu-light); color: var(--nuzu-white); }}
+    .saved-count-badge {{
+        display: inline-block; background: var(--nuzu-blue);
+        color: #fff; font-size: 0.85em; padding: 0 5px;
+        border-radius: 8px; margin-left: 4px; min-width: 16px; text-align: center;
+    }}
+
+    /* ── Light/Dark Toggle ── */
+    .light-toggle-wrap {{
+        display: flex; align-items: center; gap: 7px;
+        margin-left: auto; flex-shrink: 0; padding-left: 16px;
+    }}
+    .light-toggle-label {{
+        font-size: 0.72em; color: var(--nuzu-muted); letter-spacing: 0.04em;
+        text-transform: uppercase; user-select: none; white-space: nowrap;
+    }}
+    .toggle-switch {{ position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }}
+    .toggle-switch input {{ opacity: 0; width: 0; height: 0; }}
+    .toggle-slider {{
+        position: absolute; cursor: pointer; inset: 0;
+        background: var(--nuzu-border); border-radius: 20px; transition: background 0.2s;
+    }}
+    .toggle-slider:before {{
+        content: ""; position: absolute;
+        width: 14px; height: 14px; border-radius: 50%;
+        left: 3px; top: 3px;
+        background: var(--nuzu-muted); transition: transform 0.2s, background 0.2s;
+    }}
+    .toggle-switch input:checked + .toggle-slider {{ background: #dddddd; }}
+    .toggle-switch input:checked + .toggle-slider:before {{
+        transform: translateX(16px); background: #000000;
+    }}
+
+    /* ── Video Toggle ── */
+    .video-toggle-wrap {{
+        display: flex; align-items: center; gap: 7px;
+        margin-left: 8px; flex-shrink: 0; padding-left: 10px;
+        border-left: 1px solid var(--nuzu-border);
+    }}
+    .video-toggle-label {{
+        font-size: 0.72em; color: var(--nuzu-muted); letter-spacing: 0.04em;
+        text-transform: uppercase; user-select: none; white-space: nowrap;
+    }}
+    @media (max-width: 900px) {{ .video-toggle-wrap {{ display: none !important; }} }}
+
+    /* ── Breaking Banner ── */
+    .breaking-banner {{
+        background: var(--nuzu-blue); color: var(--nuzu-white);
+        padding: 9px 16px; font-size: 0.88em; font-weight: bold;
+        display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+        overflow: hidden;
+        animation: pulse-bg 3s ease-in-out infinite alternate;
+    }}
+    .breaking-banner .bb-label {{
+        background: var(--nuzu-white); color: var(--nuzu-blue);
+        padding: 2px 8px; border-radius: 3px; font-size: 0.76em;
+        letter-spacing: 0.08em; flex-shrink: 0;
+    }}
+    .breaking-banner .bb-text {{
+        flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        animation: slidein 0.4s ease;
+    }}
+    .breaking-banner .bb-counter {{
+        font-size: 0.72em; opacity: 0.6; flex-shrink: 0;
+    }}
+    .bb-section-pill {{
+        font-size: 0.7em; font-weight: bold; letter-spacing: 0.07em;
+        text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+        flex-shrink: 0; margin-left: 4px;
+    }}
+    @keyframes pulse-bg {{
+        from {{ background: var(--nuzu-blue); }}
+        to   {{ background: var(--nuzu-blue-l); }}
+    }}
+    @keyframes slidein {{
+        from {{ opacity: 0; transform: translateY(4px); }}
+        to   {{ opacity: 1; transform: translateY(0); }}
+    }}
+
+    /* ── Hero Masthead ── */
+    .nuzu-hero {{
+        text-align: center; padding: 32px 20px 20px;
+        background: linear-gradient(180deg, var(--nuzu-navy) 0%, var(--nuzu-dark) 100%);
+        border-bottom: 1px solid var(--nuzu-border);
+    }}
+    .nuzu-hero-wordmark {{
+        font-size: 4em; font-weight: 900; letter-spacing: 0.08em;
+        background: linear-gradient(135deg, #fff 60%, var(--nuzu-light));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        line-height: 1;
+    }}
+    .nuzu-hero-tagline {{
+        color: var(--nuzu-light); font-size: 0.82em; letter-spacing: 0.14em;
+        text-transform: uppercase; margin-top: 6px;
+    }}
+    @media (max-width: 900px) {{
+        .nuzu-hero {{ padding: 20px 16px 14px; }}
+        .nuzu-hero-wordmark {{ font-size: 2.8em; }}
+    }}
+
+    /* ── Video Banner ── */
+    .banner {{
+        background: #000; width: 100%; overflow: hidden;
+    }}
+    .video-grid {{
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 4px; padding: 6px;
+    }}
+    .youtube-inset {{ border-radius: 3px; overflow: hidden; aspect-ratio: 16/9; width: 100%; }}
+    .youtube-inset iframe {{ width: 100%; height: 100%; border: none; display: block; }}
+    .youtube-inset.audio-active {{
+        outline: 3px solid var(--nuzu-blue); outline-offset: 2px; border-radius: 3px;
+    }}
+
+    /* ── Top Stories / MRO Strip ── */
+    .top-stories-strip {{
+        max-width: 1400px; margin: 0 auto 16px auto; padding: 0 20px;
+    }}
+    .top-stories-title {{
+        font-size: 0.72em; font-weight: bold; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--nuzu-muted); margin-bottom: 10px;
+        padding-bottom: 4px; border-bottom: 1px solid var(--nuzu-border);
+    }}
+    .top-story-card {{
+        background: var(--nuzu-card); border-left: 3px solid var(--nuzu-blue);
+        padding: 10px 14px; margin-bottom: 8px; border-radius: 2px;
+    }}
+    .top-story-card .ts-section-tag {{
+        font-size: 0.68em; font-weight: bold; letter-spacing: 0.08em;
+        text-transform: uppercase; margin-right: 8px;
+        padding: 1px 6px; border-radius: 8px; display: inline-block;
+    }}
+    .ts-section-us      {{ background: #3a0000; color: #ffaaaa; }}
+    .ts-section-mideast {{ background: #3a1800; color: #ffcc99; }}
+    .ts-section-world   {{ background: #0a2030; color: #99ccee; }}
+    .ts-section-tech    {{ background: #0a1535; color: #99bbdd; }}
+    .ts-section-business{{ background: #2d1f00; color: #ddcc88; }}
+    .ts-section-sports  {{ background: #001f0d; color: #88ddaa; }}
+    .ts-section-culture {{ background: #200020; color: #ddaadd; }}
+    .top-story-card .ts-badge {{
+        background: var(--nuzu-border); color: var(--nuzu-text);
+        font-size: 0.68em; padding: 1px 6px; border-radius: 8px; margin-right: 8px;
+    }}
+    .top-story-card .ts-headline {{ color: var(--nuzu-white); font-size: 0.95em; }}
+    .top-story-card .ts-link {{
+        color: var(--nuzu-dim); text-decoration: underline;
+        font-size: 0.8em; margin-left: 6px; cursor: pointer;
+    }}
+    .top-story-card .ts-link:hover {{ color: var(--nuzu-white); }}
+    .top-stories-2col {{
+        display: flex; gap: 0; align-items: stretch; width: 100%;
+    }}
+    .ts-col {{ flex: 1; min-width: 0; padding: 0 24px 0 0; }}
+    .ts-divider-left {{
+        border-left: 1px solid var(--nuzu-border); padding-left: 24px; padding-right: 0;
+    }}
+    .mro-jump {{ color: var(--nuzu-dim); font-size: 0.78em; margin-left: 6px; cursor: pointer; }}
+
+    /* ── Search Bar ── */
+    .search-bar-wrap {{
+        max-width: 1400px; margin: 0 auto 18px auto; padding: 12px 20px;
+        background: var(--nuzu-card); border-top: 1px solid var(--nuzu-border);
+        border-bottom: 1px solid var(--nuzu-border);
+        display: flex; align-items: center; gap: 10px;
+    }}
+    .search-bar-wrap input {{
+        flex: 1; padding: 8px 14px; border-radius: 4px;
+        border: 1px solid var(--nuzu-border); background: var(--nuzu-dark);
+        color: var(--nuzu-white); font-size: 0.95em; outline: none;
+        transition: border-color 0.15s;
+    }}
+    .search-bar-wrap input:focus {{ border-color: var(--nuzu-blue); }}
+    .search-bar-wrap input::placeholder {{ color: var(--nuzu-dim); }}
+    .search-bar-wrap button {{
+        padding: 8px 18px; border-radius: 4px; border: none;
+        background: var(--nuzu-blue); color: var(--nuzu-white);
+        font-size: 0.9em; font-weight: bold; cursor: pointer;
+        letter-spacing: 0.04em; transition: background 0.15s; white-space: nowrap;
+    }}
+    .search-bar-wrap button:hover {{ background: var(--nuzu-blue-l); }}
+
+    /* ── Ad Slots ── */
+    .ad-slot {{
+        background: var(--nuzu-card); border: 1px dashed var(--nuzu-border);
+        border-radius: 4px; padding: 14px 20px; margin-bottom: 16px;
+        text-align: center;
+    }}
+    .ad-slot-label {{
+        font-size: 0.65em; color: var(--nuzu-dim); letter-spacing: 0.1em;
+        text-transform: uppercase; display: block; margin-bottom: 6px;
+    }}
+    .ad-slot-inner {{ color: var(--nuzu-muted); font-size: 0.88em; }}
+    .ad-slot-inner a {{ color: var(--nuzu-light); }}
+
+    /* ── Sponsored Section ── */
+    .sponsored-section {{
+        max-width: 1400px; margin: 0 auto 16px auto; padding: 0 20px;
+    }}
+    .sponsored-label {{
+        font-size: 0.65em; color: var(--nuzu-dim); letter-spacing: 0.1em;
+        text-transform: uppercase; display: block; margin-bottom: 8px;
+    }}
+    .sponsored-content {{
+        background: var(--nuzu-card); border: 1px solid var(--nuzu-border);
+        border-radius: 4px; padding: 16px 20px;
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }}
+    .sponsored-logo {{
+        font-size: 1.2em; font-weight: bold; color: var(--nuzu-light);
+        flex-shrink: 0;
+    }}
+    .sponsored-text {{ flex: 1; font-size: 0.85em; color: var(--nuzu-muted); }}
+    .sponsored-cta {{
+        background: var(--nuzu-blue); color: #fff; text-decoration: none;
+        padding: 8px 18px; border-radius: 4px; font-size: 0.82em;
+        font-weight: bold; transition: background 0.15s; white-space: nowrap;
+    }}
+    .sponsored-cta:hover {{ background: var(--nuzu-blue-l); }}
+
+    /* ── Section Layout ── */
+    .container {{
+        display: flex; flex-wrap: wrap; gap: 30px;
+        max-width: 1400px; margin: 0 auto; padding: 0 20px;
+        align-items: flex-start;
+    }}
+    .column {{ flex: 1; min-width: 300px; }}
+    .section-wrap {{ padding: 0 0 10px 0; }}
+    .top-divider {{
+        border: 0; height: 3px;
+        background: var(--nuzu-border); margin: 28px 0;
+    }}
+    .src-summary {{ color: var(--nuzu-dim); font-size: 0.78em; margin-bottom: 12px; }}
+
+    /* ── Section Titles ── */
+    .section-title {{
+        font-size: 1.4em; margin: 0 0 6px; font-weight: 900;
+        text-decoration: underline; text-decoration-thickness: 2px;
+        display: flex; align-items: center; gap: 8px;
+        letter-spacing: 0.06em; text-transform: uppercase;
+    }}
+    .sec-dot {{
+        display: inline-block; width: 12px; height: 12px;
+        border-radius: 50%; flex-shrink: 0; margin-right: 2px;
+    }}
+    .section-title.us-color       {{ color: {SECTION_COLORS["us"]};       text-decoration-color: {SECTION_COLORS["us"]}; }}
+    .section-title.mideast-color   {{ color: {SECTION_COLORS["mideast"]};  text-decoration-color: {SECTION_COLORS["mideast"]}; }}
+    .section-title.world-color     {{ color: {SECTION_COLORS["world"]};    text-decoration-color: {SECTION_COLORS["world"]}; }}
+    .section-title.tech-color      {{ color: {SECTION_COLORS["tech"]};     text-decoration-color: {SECTION_COLORS["tech"]}; }}
+    .section-title.business-color  {{ color: {SECTION_COLORS["business"]}; text-decoration-color: {SECTION_COLORS["business"]}; }}
+    .section-title.sports-color    {{ color: {SECTION_COLORS["sports"]};   text-decoration-color: {SECTION_COLORS["sports"]}; }}
+    .section-title.culture-color   {{ color: {SECTION_COLORS["culture"]};  text-decoration-color: {SECTION_COLORS["culture"]}; }}
+    .section-title-row {{ display: flex; align-items: center; margin-bottom: 6px; }}
+    .section-title-row .section-title {{ margin-bottom: 0; }}
+    .section-columns {{ transition: none; }}
+    .section-columns.collapsed {{ display: none; }}
+    .section-collapse-btn {{
+        background: none; border: none; cursor: pointer;
+        color: inherit; font-size: 1em; padding: 0 0 0 8px;
+        line-height: 1; opacity: 0.6; transition: opacity 0.15s;
+        vertical-align: middle; flex-shrink: 0;
+    }}
+    .section-collapse-btn:hover {{ opacity: 1; }}
+
+    /* ── Per-Section Cluster Tints ── */
+    #section-us       .cluster {{ border-left-color: #4a0000; background: #0d0202; }}
+    #section-mideast  .cluster {{ border-left-color: #4a2000; background: #0d0600; }}
+    #section-world    .cluster {{ border-left-color: #0d3040; background: #030e18; }}
+    #section-tech     .cluster {{ border-left-color: #0a2040; background: #030a18; }}
+    #section-business .cluster {{ border-left-color: #3d2d00; background: #120e00; }}
+    #section-sports   .cluster {{ border-left-color: #002a18; background: #000d07; }}
+    #section-culture  .cluster {{ border-left-color: #300030; background: #0d000d; }}
+
+    /* ── Headlines ── */
+    .headline {{
+        margin-bottom: 14px; padding-bottom: 10px;
+        border-bottom: 1px solid var(--nuzu-border); line-height: 1.5;
+    }}
+    .headline.seen-item {{ opacity: 0.55; }}
+    .title {{ color: var(--nuzu-white); font-size: 1em; }}
+    .ts-label {{ color: var(--nuzu-dim); font-size: 0.78em; margin-left: 4px; }}
+    .src-label {{ color: var(--nuzu-muted); font-size: 0.88em; }}
+    .new-dot {{ color: var(--nuzu-white); font-size: 0.55em; vertical-align: middle; margin-right: 2px; }}
+    .trust-badge {{ color: #4CAF50; font-size: 0.65em; vertical-align: middle; margin-right: 2px; }}
+
+    /* ── Clusters ── */
+    .cluster {{
+        margin-bottom: 16px; padding: 10px 12px 4px 12px;
+        border-left: 3px solid var(--nuzu-border); border-bottom: 1px solid var(--nuzu-border);
+        background: var(--nuzu-card); cursor: pointer;
+    }}
+    .cluster-header {{ margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }}
+    .cluster-badge {{
+        background: var(--nuzu-border); color: var(--nuzu-text);
+        font-size: 0.72em; padding: 2px 7px; border-radius: 10px;
+        font-weight: bold; letter-spacing: 0.04em; flex-shrink: 0;
+    }}
+    .cluster-lead {{ margin-bottom: 6px; }}
+    .cluster-items-wrap {{ transition: none; }}
+    .cluster-items-wrap.collapsed {{ display: none; }}
+    .cluster-toggle-btn {{
+        background: none; border: 1px solid var(--nuzu-border); border-radius: 10px;
+        color: var(--nuzu-dim); font-size: 0.7em; padding: 2px 8px; cursor: pointer;
+        letter-spacing: 0.03em; transition: color 0.15s, border-color 0.15s;
+        margin-left: 4px; flex-shrink: 0;
+    }}
+    .cluster-toggle-btn:hover {{ color: var(--nuzu-white); border-color: var(--nuzu-muted); }}
+    .cluster-toggle-btn.open {{ color: var(--nuzu-text); border-color: var(--nuzu-muted); }}
+    .cluster-sources-line {{
+        color: var(--nuzu-dim); font-size: 0.73em; margin-bottom: 6px;
+        padding-bottom: 4px; border-bottom: 1px solid var(--nuzu-border);
+    }}
+    .cluster-item {{
+        margin-bottom: 8px; padding-bottom: 8px;
+        border-bottom: 1px solid var(--nuzu-border); line-height: 1.5;
+    }}
+    .cluster-item:last-child {{ border-bottom: none; margin-bottom: 0; }}
+    .cluster-item.seen-item {{ opacity: 0.55; }}
+
+    /* ── Article Links & Bookmark ── */
+    .link {{
+        color: var(--nuzu-dim); text-decoration: underline;
+        font-size: 0.85em; margin-left: 6px; cursor: pointer;
+        transition: color 0.15s;
+    }}
+    .link:hover {{ color: var(--nuzu-white); }}
+    .bookmark-btn {{
+        background: none; border: none; cursor: pointer;
+        color: var(--nuzu-dim); font-size: 0.85em; padding: 0 4px;
+        transition: color 0.15s; vertical-align: middle;
+    }}
+    .bookmark-btn:hover, .bookmark-btn.saved {{ color: #f0c040; }}
+
+    /* ── Saved Articles Panel ── */
+    .saved-articles-panel {{
+        position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
+        background: var(--nuzu-navy); border-left: 2px solid var(--nuzu-blue);
+        z-index: 2000; transition: right 0.3s ease; overflow-y: auto;
+        box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+    }}
+    .saved-articles-panel.open {{ right: 0; }}
+    .saved-panel-header {{
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 20px; border-bottom: 1px solid var(--nuzu-border);
+        position: sticky; top: 0; background: var(--nuzu-navy);
+    }}
+    .saved-panel-header h3 {{ font-size: 1em; color: var(--nuzu-white); font-weight: bold; }}
+    .saved-panel-close {{
+        background: none; border: none; cursor: pointer;
+        color: var(--nuzu-muted); font-size: 1.2em; padding: 4px 8px;
+    }}
+    .saved-panel-close:hover {{ color: var(--nuzu-white); }}
+    .saved-panel-list {{ padding: 16px 20px; }}
+    .saved-panel-empty {{ color: var(--nuzu-dim); font-size: 0.88em; line-height: 1.8; }}
+    .saved-item {{
+        display: flex; align-items: flex-start; gap: 10px;
+        padding: 10px 0; border-bottom: 1px solid var(--nuzu-border);
+    }}
+    .saved-item-title {{
+        flex: 1; color: var(--nuzu-text); font-size: 0.88em;
+        cursor: pointer; line-height: 1.5; text-decoration: none;
+    }}
+    .saved-item-title:hover {{ color: var(--nuzu-white); }}
+    .saved-item-remove {{
+        background: none; border: none; cursor: pointer;
+        color: var(--nuzu-dim); font-size: 0.9em; flex-shrink: 0;
+        padding: 2px 6px;
+    }}
+    .saved-item-remove:hover {{ color: #E74C3C; }}
+
+    /* ── In-App Article Reader ── */
+    .nuzu-reader-overlay {{
+        display: none; position: fixed; inset: 0; z-index: 5000;
+        background: #000; flex-direction: column;
+    }}
+    .nuzu-reader-overlay.open {{ display: flex; }}
+    .nuzu-reader-header {{
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 16px; background: var(--nuzu-navy);
+        border-bottom: 2px solid var(--nuzu-blue); flex-shrink: 0; gap: 12px;
+    }}
+    .nuzu-reader-logo {{
+        font-size: 1em; font-weight: 900; letter-spacing: 0.1em;
+        color: var(--nuzu-white); flex-shrink: 0;
+    }}
+    .nuzu-reader-title {{
+        flex: 1; font-size: 0.82em; color: var(--nuzu-text);
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }}
+    .nuzu-reader-controls {{ display: flex; gap: 8px; flex-shrink: 0; }}
+    .nuzu-reader-btn {{
+        background: none; border: 1px solid var(--nuzu-border); border-radius: 4px;
+        color: var(--nuzu-light); font-size: 0.78em; padding: 5px 14px;
+        cursor: pointer; transition: border-color 0.15s, color 0.15s; white-space: nowrap;
+    }}
+    .nuzu-reader-btn:hover {{ border-color: var(--nuzu-light); color: var(--nuzu-white); }}
+    .nuzu-reader-btn.primary {{ background: var(--nuzu-blue); border-color: var(--nuzu-blue); color: #fff; }}
+    .nuzu-reader-btn.primary:hover {{ background: var(--nuzu-blue-l); }}
+    .nuzu-reader-iframe-wrap {{ flex: 1; position: relative; }}
+    #nuzu-reader-iframe {{ width: 100%; height: 100%; border: none; display: block; }}
+    .nuzu-reader-loading {{
+        display: none; position: absolute; inset: 0;
+        align-items: center; justify-content: center;
+        flex-direction: column; gap: 16px;
+        background: var(--nuzu-dark); color: var(--nuzu-muted);
+    }}
+    .spinner {{
+        width: 40px; height: 40px; border: 3px solid var(--nuzu-border);
+        border-top-color: var(--nuzu-blue); border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }}
+    @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+    .nuzu-reader-blocked {{
+        display: none; position: absolute; inset: 0;
+        align-items: center; justify-content: center;
+        flex-direction: column; gap: 16px; text-align: center;
+        background: var(--nuzu-dark); padding: 40px;
+    }}
+    .nuzu-reader-blocked.show {{ display: flex; }}
+    .nuzu-reader-blocked h3 {{ color: var(--nuzu-white); font-size: 1.2em; }}
+    .nuzu-reader-blocked p {{ color: var(--nuzu-muted); font-size: 0.88em; line-height: 1.7; }}
+
+    /* ── Pull-to-Refresh ── */
+    .ptr-indicator {{
+        position: fixed; top: 48px; left: 50%; transform: translateX(-50%);
+        background: var(--nuzu-blue); color: #fff;
+        padding: 8px 20px; border-radius: 20px; font-size: 0.82em;
+        font-weight: bold; z-index: 999; opacity: 0;
+        transition: opacity 0.2s; pointer-events: none;
+    }}
+    .ptr-indicator.visible {{ opacity: 1; }}
+
+    /* ── Trending Topics ── */
+    .trend-tags-wrap {{ display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }}
+    .trend-tag {{
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--nuzu-border); border-radius: 20px;
+        padding: 4px 12px; text-decoration: none;
+        transition: background 0.15s; background: var(--nuzu-card);
+    }}
+    .trend-tag:hover {{ background: var(--nuzu-border); }}
+    .trend-word {{ color: var(--nuzu-text); font-size: 0.82em; font-weight: bold; }}
+    .trend-count {{
+        background: var(--nuzu-border); color: var(--nuzu-muted);
+        font-size: 0.68em; padding: 1px 6px; border-radius: 8px; font-weight: bold;
+    }}
+
+    /* ── Updated Ago ── */
+    .nav-updated-ago {{
+        font-size: 0.65em; color: var(--nuzu-dim); margin-right: 8px;
+        white-space: nowrap; flex-shrink: 0;
+    }}
+
+    /* ── Search Hidden/Match ── */
+    .headline.search-hidden, .cluster.search-hidden {{ display: none !important; }}
+    .headline.search-match {{ outline: 1px solid var(--nuzu-blue); }}
+
+    /* ── Light Mode ── */
+    body.light-mode {{
+        background: #FFFFFF !important; color: #1a1a1a !important;
+        --nuzu-navy:    #F0F4FB;
+        --nuzu-dark:    #FFFFFF;
+        --nuzu-blue:    #1E4FD8;
+        --nuzu-blue-l:  #2563EB;
+        --nuzu-light:   #1E4FD8;
+        --nuzu-border:  #D1D9E8;
+        --nuzu-card:    #EBF0FA;
+        --nuzu-muted:   #3A5A8A;
+        --nuzu-dim:     #6A7A9A;
+        --nuzu-text:    #1a1a1a;
+        --nuzu-white:   #000000;
+    }}
+    body.light-mode .sticky-nav {{ background: #EBF0FA !important; border-bottom-color: var(--nuzu-blue) !important; }}
+    body.light-mode .sticky-nav .site-name {{ -webkit-text-fill-color: transparent; }}
+    body.light-mode .breaking-banner {{ background: var(--nuzu-blue) !important; }}
+    body.light-mode .nuzu-hero {{
+        background: linear-gradient(180deg, #E0E8F8 0%, #F5F8FF 100%) !important;
+    }}
+    body.light-mode .nuzu-hero-wordmark {{ -webkit-text-fill-color: transparent; }}
+    body.light-mode .title {{ color: #000 !important; }}
+    body.light-mode .top-story-card {{ background: #EBF0FA !important; }}
+    body.light-mode #section-us       .cluster {{ background: #FFF0F0 !important; border-left-color: #C0392B !important; }}
+    body.light-mode #section-mideast  .cluster {{ background: #FFF5EE !important; border-left-color: #D35400 !important; }}
+    body.light-mode #section-world    .cluster {{ background: #EEF4FB !important; border-left-color: #1A6FA8 !important; }}
+    body.light-mode #section-tech     .cluster {{ background: #EEF4FF !important; border-left-color: #1E4FD8 !important; }}
+    body.light-mode #section-business .cluster {{ background: #FBF8EE !important; border-left-color: #8B6914 !important; }}
+    body.light-mode #section-sports   .cluster {{ background: #EEF8F3 !important; border-left-color: #1A7A4A !important; }}
+    body.light-mode #section-culture  .cluster {{ background: #F8EEF8 !important; border-left-color: #7B2D8B !important; }}
+    body.light-mode .saved-articles-panel {{ background: #F5F8FF !important; border-left-color: var(--nuzu-blue) !important; }}
+    body.light-mode .float-mode-btn {{ background: #EBF0FA; color: #000; border-color: #D1D9E8; }}
+
+    /* ── Float Mode Button ── */
+    .float-mode-btn {{
+        display: none;
+        position: fixed; bottom: 20px; right: 16px; z-index: 2000;
+        background: var(--nuzu-card); color: var(--nuzu-white);
+        border: 1px solid var(--nuzu-border);
+        border-radius: 50px; padding: 8px 14px;
+        font-size: 0.78em; font-weight: bold;
+        cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        transition: background 0.2s, color 0.2s; user-select: none;
+    }}
+    @media (max-width: 900px) {{ .float-mode-btn {{ display: block; }} }}
+    </style>
+</head>
+<body>
+""")
+
 html_parts.append(f"""
     body.light-mode .float-mode-btn{{background:#EBF0FA;color:#000;border-color:#D1D9E8}}
     @media(max-width:900px){{.float-mode-btn{{display:block}}}}
