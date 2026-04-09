@@ -2934,7 +2934,167 @@ html_parts.append(f"""<!DOCTYPE html>
         transition: background 0.2s, color 0.2s; user-select: none;
     }}
     @media (max-width: 900px) {{ .float-mode-btn {{ display: block; }} }}
-    </style>
+
+    /* ── Professional Footer Styles ── */
+    .site-footer {{
+        margin-top: 50px;
+        background: var(--nuzu-navy);
+        border-top: 3px solid var(--nuzu-blue);
+        color: var(--nuzu-muted);
+        font-size: 0.85em;
+        padding: 0;
+    }}
+    body.light-mode .site-footer {{
+        background: #f4f4f4 !important;
+        border-top-color: var(--nuzu-blue) !important;
+        color: #555 !important;
+    }}
+    .back-to-top-btn {{
+        display: block; margin: 0 auto;
+        background: none; border: 0;
+        color: var(--nuzu-muted); font-size: 0.9em;
+        padding: 18px 24px; cursor: pointer;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        transition: color 0.18s; width: 100%;
+        border-bottom: 1px solid var(--nuzu-border);
+    }}
+    .back-to-top-btn:hover {{ color: var(--nuzu-white); background: var(--nuzu-card); }}
+    body.light-mode .back-to-top-btn {{ color: #888; border-bottom-color: #ddd; }}
+    body.light-mode .back-to-top-btn:hover {{ color: #000; background: #eee; }}
+    .footer-masthead {{
+        max-width: 1400px; margin: 0 auto;
+        padding: 36px 32px 28px 32px;
+        display: flex; flex-direction: column; gap: 18px;
+    }}
+    .footer-logo-block {{ display: flex; align-items: center; gap: 14px; }}
+    .footer-logo-nz {{
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 52px; height: 52px; background: var(--nuzu-blue);
+        color: #fff; font-size: 1.3em; font-weight: 900;
+        border-radius: 6px; flex-shrink: 0; letter-spacing: 0.08em;
+    }}
+    .footer-logo-text strong {{ display: block; font-size: 1.1em; color: var(--nuzu-white); letter-spacing: 0.03em; }}
+    .footer-logo-text span {{ font-size: 0.82em; color: var(--nuzu-muted); font-style: italic; }}
+    body.light-mode .footer-logo-text strong {{ color: #222; }}
+    body.light-mode .footer-logo-text span {{ color: #888; }}
+    .footer-mission {{ max-width: 760px; line-height: 1.7; color: var(--nuzu-muted); font-size: 0.88em; }}
+    body.light-mode .footer-mission {{ color: #666; }}
+    .footer-donate-wrap {{ display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }}
+    .footer-donate-label {{ color: var(--nuzu-dim); font-size: 0.82em; }}
+    .footer-donate-btn {{
+        display: inline-block; padding: 10px 24px;
+        background: var(--nuzu-blue); color: #fff !important;
+        font-weight: bold; text-decoration: none;
+        border-radius: 4px; font-size: 0.88em;
+        letter-spacing: 0.04em; transition: background 0.18s;
+    }}
+    .footer-donate-btn:hover {{ background: var(--nuzu-blue-l); }}
+    .footer-divider {{ border: 0; height: 1px; background: var(--nuzu-border); margin: 0; }}
+    body.light-mode .footer-divider {{ background: #ddd; }}
+    .footer-grid {{
+        max-width: 1400px; margin: 0 auto; padding: 32px;
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    }}
+    @media (max-width: 900px) {{ .footer-grid {{ grid-template-columns: repeat(2, 1fr); gap: 24px; padding: 24px 18px; }} }}
+    @media (max-width: 520px) {{ .footer-grid {{ grid-template-columns: 1fr; }} }}
+    .footer-col h3 {{
+        font-size: 0.78em; font-weight: bold; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--nuzu-text);
+        margin-bottom: 14px; padding-bottom: 6px;
+        border-bottom: 1px solid var(--nuzu-border);
+    }}
+    body.light-mode .footer-col h3 {{ color: #444; border-bottom-color: #ddd; }}
+    .footer-col ul {{ list-style: none; margin: 0; padding: 0; }}
+    .footer-col ul li {{ margin-bottom: 8px; }}
+    .footer-col ul li a {{ color: var(--nuzu-muted); text-decoration: none; font-size: 0.84em; transition: color 0.15s; }}
+    .footer-col ul li a:hover {{ color: var(--nuzu-white); }}
+    body.light-mode .footer-col ul li a {{ color: #666; }}
+    body.light-mode .footer-col ul li a:hover {{ color: #000; }}
+    .footer-social {{
+        max-width: 1400px; margin: 0 auto; padding: 22px 32px;
+        display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }}
+    .footer-social-label {{ font-size: 0.78em; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nuzu-text); }}
+    body.light-mode .footer-social-label {{ color: #555; }}
+    .footer-social-icons {{ display: flex; gap: 10px; }}
+    .social-icon {{
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 36px; height: 36px; border: 1px solid var(--nuzu-border);
+        border-radius: 50%; color: var(--nuzu-muted); text-decoration: none;
+        font-size: 0.85em; font-weight: bold;
+        transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }}
+    .social-icon:hover {{ border-color: var(--nuzu-white); color: var(--nuzu-white); background: var(--nuzu-card); }}
+    body.light-mode .social-icon {{ border-color: #ccc; color: #555; }}
+    body.light-mode .social-icon:hover {{ border-color: #333; color: #000; background: #eee; }}
+    .footer-stay-informed {{
+        max-width: 1400px; margin: 0 auto; padding: 0 32px 24px 32px;
+        display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }}
+    .footer-si-label {{ font-size: 0.78em; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nuzu-text); }}
+    body.light-mode .footer-si-label {{ color: #555; }}
+    .footer-si-links {{ display: flex; gap: 10px; flex-wrap: wrap; }}
+    .footer-app-btn {{
+        display: inline-block; padding: 7px 14px;
+        border: 1px solid var(--nuzu-border); border-radius: 20px;
+        color: var(--nuzu-muted); text-decoration: none; font-size: 0.78em;
+        transition: border-color 0.15s, color 0.15s;
+    }}
+    .footer-app-btn:hover {{ border-color: var(--nuzu-muted); color: var(--nuzu-white); }}
+    body.light-mode .footer-app-btn {{ border-color: #ccc; color: #666; }}
+    body.light-mode .footer-app-btn:hover {{ border-color: #555; color: #000; }}
+    .footer-bottom {{ max-width: 1400px; margin: 0 auto; padding: 22px 32px 40px 32px; text-align: center; }}
+    .footer-copyright {{ font-size: 0.82em; color: var(--nuzu-dim); margin-bottom: 6px; }}
+    body.light-mode .footer-copyright {{ color: #777; }}
+    .footer-update {{ font-size: 0.76em; color: var(--nuzu-dim); margin-bottom: 14px; }}
+    body.light-mode .footer-update {{ color: #999; }}
+    .footer-bottom-links {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-bottom: 16px; }}
+    .footer-bottom-links a {{ color: var(--nuzu-dim); text-decoration: none; font-size: 0.78em; transition: color 0.15s; }}
+    .footer-bottom-links a:hover {{ color: var(--nuzu-white); }}
+    body.light-mode .footer-bottom-links a {{ color: #777; }}
+    body.light-mode .footer-bottom-links a:hover {{ color: #000; }}
+    .footer-disclaimer {{ font-size: 0.73em; color: var(--nuzu-dim); line-height: 1.6; max-width: 800px; margin: 0 auto; }}
+    body.light-mode .footer-disclaimer {{ color: #aaa; }}
+    .newsletter-form {{ display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }}
+    .newsletter-form input[type="email"] {{
+        flex: 1; min-width: 200px; padding: 8px 14px;
+        border-radius: 4px; border: 1px solid var(--nuzu-border);
+        background: var(--nuzu-dark); color: var(--nuzu-white);
+        font-size: 0.88em; outline: none;
+    }}
+    .newsletter-form input[type="email"]:focus {{ border-color: var(--nuzu-blue); }}
+    .newsletter-form input[type="email"]::placeholder {{ color: var(--nuzu-dim); }}
+    .newsletter-form button {{
+        padding: 8px 18px; border-radius: 4px; border: none;
+        background: var(--nuzu-blue); color: #fff;
+        font-size: 0.88em; font-weight: bold; cursor: pointer; transition: background 0.15s;
+    }}
+    .newsletter-form button:hover {{ background: var(--nuzu-blue-l); }}
+    .newsletter-msg {{ font-size: 0.8em; margin-top: 4px; }}
+    body.light-mode .newsletter-form input[type="email"] {{
+        background: #fff !important; color: #000 !important; border-color: #ccc !important;
+    }}
+    body.light-mode .newsletter-form input[type="email"]::placeholder {{ color: #888 !important; }}
+    .homepage-wrap {{ margin-top: 22px; text-align: center; }}
+    .set-homepage-btn {{
+        background: none; border: 1px solid var(--nuzu-border); border-radius: 20px;
+        color: var(--nuzu-muted); font-size: 0.78em; padding: 6px 16px; cursor: pointer;
+        transition: border-color 0.15s, color 0.15s; letter-spacing: 0.03em;
+    }}
+    .set-homepage-btn:hover {{ border-color: var(--nuzu-muted); color: var(--nuzu-white); }}
+    body.light-mode .set-homepage-btn {{ border-color: #ccc; color: #888; }}
+    body.light-mode .set-homepage-btn:hover {{ border-color: #888; color: #333; }}
+    .homepage-instructions {{
+        margin-top: 14px; padding: 14px 18px;
+        background: var(--nuzu-card); border: 1px solid var(--nuzu-border);
+        border-radius: 6px; font-size: 0.8em; color: var(--nuzu-muted);
+        line-height: 1.9; text-align: left; display: inline-block; max-width: 560px;
+    }}
+    body.light-mode .homepage-instructions {{ background: #f0f0f0; border-color: #ddd; color: #555; }}
+    .homepage-instructions code {{ color: var(--nuzu-light); font-size: 0.9em; }}
+    .hp-browser {{ display: block; }}
+
+        </style>
 </head>
 <body>
 """)
