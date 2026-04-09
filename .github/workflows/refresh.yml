@@ -1,43 +1,26 @@
 name: refresh
-
 on:
   schedule:
-    - cron: '0 * * * *'   # every hour
-  workflow_dispatch:        # manual trigger
-
+    - cron: '0 * * * *'
+  workflow_dispatch:
 jobs:
   refresh:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: pip install feedparser
-
       - name: Run bot
-        run: |
-          echo "=== Starting bot ==="
-          python bot.py
-          echo "=== Bot finished ==="
-          echo "--- Files written ---"
-          ls -lh index.html feed.xml feed.json _headers 2>/dev/null || echo "Some files missing!"
-          echo "--- index.html size check ---"
-          wc -c index.html
-
+        run: python bot.py
       - name: Commit and push
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html feed.xml feed.json _headers
-          echo "--- git status ---"
-          git status
-          git diff --cached --stat
-          git diff --cached --quiet || git commit -m "Auto-refresh $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add -f index.html feed.xml feed.json _headers
+          git commit -m "refresh $(date -u '+%Y-%m-%d %H:%M UTC')" || echo "nothing to commit"
           git push
