@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+import socket
+socket.setdefaulttimeout(20)
 
 print("Starting NUZU bot...")
 CURRENT_DIR = os.getcwd()
