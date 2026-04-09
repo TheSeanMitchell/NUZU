@@ -30,7 +30,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html feed.xml _headers
-git add feed.json version.json 2>/dev/null || true
+          git add index.html feed.xml feed.json _headers version.json || true
           git diff --cached --quiet || git commit -m "Auto-refresh $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
