@@ -2194,6 +2194,7 @@ def render_clusters(clusters):
                 f' <span class="ts-label">{time_str}</span>'
                 f' <span class="src-label">\u2014 {friendly}</span>'
                 f' <button class="bookmark-btn" data-link="{link}" data-title="{safe_title_attr}" aria-label="Save article" title="Save for later">&#9733;</button>'
+                f' <button class="share-btn" data-link="{link}" data-title="{safe_title_attr}" aria-label="Share article" title="Share">&#8679;</button>'
                 f' <a class="link nuzu-article-link" href="{link}" data-title="{safe_title_attr}">[Read]</a>'
                 f'</div>\n'
             )
@@ -2224,6 +2225,7 @@ def render_clusters(clusters):
                 f' <span class="ts-label">{time_str}</span>'
                 f' <span class="src-label">\u2014 {lead_friendly}</span>'
                 f' <button class="bookmark-btn" data-link="{lead_link}" data-title="{safe_title_attr}" aria-label="Save article" title="Save for later">&#9733;</button>'
+                f' <button class="share-btn" data-link="{lead_link}" data-title="{safe_title_attr}" aria-label="Share article" title="Share">&#8679;</button>'
                 f' <a class="link nuzu-article-link" href="{lead_link}" data-title="{safe_title_attr}">[Read]</a>'
                 f'</div>\n'
                 f'<div id="{cluster_id}" class="cluster-items-wrap collapsed">\n'
@@ -2239,6 +2241,7 @@ def render_clusters(clusters):
                     f'<span class="title">{dtitle}</span>'
                     f' <span class="ts-label">{ts_str}</span>'
                     f' <span class="src-label">\u2014 {friendly}</span>'
+                    f' <button class="share-btn" data-link="{link}" data-title="{safe_dt}" aria-label="Share article" title="Share">&#8679;</button>'
                     f' <a class="link nuzu-article-link" href="{link}" data-title="{safe_dt}">[Read]</a>'
                     f'</div>\n'
                 )
@@ -3269,7 +3272,81 @@ html_parts.append(f"""<!DOCTYPE html>
         #wr-subtitle {{ display: none; }}
     }}
 
-    
+    /* ── Share Button ── */
+    .share-btn {{
+        background: none; border: none; cursor: pointer;
+        color: var(--nuzu-dim); font-size: 0.85em; padding: 0 4px;
+        transition: color 0.15s; vertical-align: middle;
+        display: none;
+    }}
+    .share-btn:hover {{ color: var(--nuzu-light); }}
+    @supports (display: grid) {{
+        .share-btn {{ display: inline; }}
+    }}
+    /* Only show natively if Web Share API is available —
+       JS will add class 'share-api-available' to body */
+    body:not(.share-api-available) .share-btn {{ display: none !important; }}
+
+    /* ── Mobile Bottom Navigation Bar ── */
+    .nuzu-bottom-nav {{
+        display: none;
+        position: fixed; bottom: 0; left: 0; right: 0; z-index: 1001;
+        background: var(--nuzu-navy);
+        border-top: 2px solid var(--nuzu-blue);
+        height: 58px;
+        padding: 0;
+        justify-content: space-around;
+        align-items: stretch;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.4);
+    }}
+    @media (max-width: 900px) {{
+        .nuzu-bottom-nav {{ display: flex; }}
+        body {{ padding-bottom: 58px; }}
+    }}
+    .nuzu-bottom-nav-item {{
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 3px; flex: 1;
+        color: var(--nuzu-muted); text-decoration: none;
+        font-size: 0.6em; font-weight: bold; letter-spacing: 0.05em;
+        text-transform: uppercase; cursor: pointer; border: none;
+        background: none; padding: 0; transition: color 0.15s;
+        -webkit-tap-highlight-color: transparent;
+    }}
+    .nuzu-bottom-nav-item:hover,
+    .nuzu-bottom-nav-item.active {{ color: var(--nuzu-white); }}
+    .nuzu-bottom-nav-item.active .bnav-icon {{ color: var(--nuzu-blue); }}
+    .bnav-icon {{
+        font-size: 1.5em; line-height: 1;
+        transition: color 0.15s, transform 0.15s;
+    }}
+    .nuzu-bottom-nav-item:active .bnav-icon {{ transform: scale(0.88); }}
+    .bnav-saved-badge {{
+        display: none; position: absolute;
+        top: 6px; right: calc(50% - 22px);
+        background: var(--nuzu-blue); color: #fff;
+        font-size: 0.55em; padding: 1px 5px;
+        border-radius: 8px; min-width: 16px; text-align: center;
+        font-weight: bold;
+    }}
+    .bnav-saved-wrap {{ position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; height: 100%; justify-content: center; }}
+    body.light-mode .nuzu-bottom-nav {{ background: #EBF0FA !important; border-top-color: var(--nuzu-blue) !important; }}
+    body.light-mode .nuzu-bottom-nav-item {{ color: #8899BB; }}
+    body.light-mode .nuzu-bottom-nav-item.active {{ color: #000; }}
+
+    /* ── Float button: push up above bottom nav on mobile ── */
+    @media (max-width: 900px) {{
+        .float-mode-btn {{ bottom: 68px !important; }}
+    }}
+
+    /* ── Swipe hint animation (first visit only) ── */
+    @keyframes swipeHint {{
+        0%   {{ transform: translateX(0); opacity: 1; }}
+        40%  {{ transform: translateX(48px); opacity: 0.4; }}
+        60%  {{ transform: translateX(48px); opacity: 0.4; }}
+        100% {{ transform: translateX(0); opacity: 1; }}
+    }}
+    .swipe-hint {{ animation: swipeHint 1.4s ease 2s 2 both; }}
+
         </style>
 </head>
 <body>
@@ -3325,6 +3402,33 @@ html_parts.append("""
 </div>
 
 <div class="ptr-indicator" id="ptr-indicator">&#8635; Release to refresh</div>
+
+<!-- ── Mobile Bottom Navigation Bar ── -->
+<nav class="nuzu-bottom-nav" role="navigation" aria-label="NUZU bottom navigation">
+  <a href="#section-us" class="nuzu-bottom-nav-item" data-section="section-us" aria-label="US News">
+    <span class="bnav-icon">&#127482;&#127480;</span>
+    <span>US</span>
+  </a>
+  <a href="#section-world" class="nuzu-bottom-nav-item" data-section="section-world" aria-label="World News">
+    <span class="bnav-icon">&#127758;</span>
+    <span>World</span>
+  </a>
+  <a href="#section-mideast" class="nuzu-bottom-nav-item" data-section="section-mideast" aria-label="Middle East">
+    <span class="bnav-icon">&#9888;</span>
+    <span>Mid East</span>
+  </a>
+  <a href="#section-tech" class="nuzu-bottom-nav-item" data-section="section-tech" aria-label="Tech News">
+    <span class="bnav-icon">&#128187;</span>
+    <span>Tech</span>
+  </a>
+  <button class="nuzu-bottom-nav-item" id="bnav-saved-btn" aria-label="Saved articles">
+    <div class="bnav-saved-wrap">
+      <span class="bnav-icon">&#9733;</span>
+      <span>Saved</span>
+      <span class="bnav-saved-badge" id="bnav-saved-badge"></span>
+    </div>
+  </button>
+</nav>
 """)
 
 # ── Sticky nav ──
@@ -3908,6 +4012,78 @@ function showRefreshToast() {{
 }}
 
 document.addEventListener('DOMContentLoaded', function() {{
+
+// ── Detect Web Share API and enable share buttons ──
+(function() {{
+  if (navigator.share) {{
+    document.body.classList.add('share-api-available');
+  }}
+}})();
+
+// ── Bottom nav: sync saved badge + scroll spy ──
+(function() {{
+  var bnavSavedBadge = document.getElementById('bnav-saved-badge');
+  var bnavSavedBtn   = document.getElementById('bnav-saved-btn');
+
+  function syncBnavBadge() {{
+    try {{
+      var raw = localStorage.getItem('nuzu_saved_articles');
+      var count = raw ? Object.keys(JSON.parse(raw)).length : 0;
+      if (bnavSavedBadge) {{
+        bnavSavedBadge.textContent = count > 0 ? count : '';
+        bnavSavedBadge.style.display = count > 0 ? 'block' : 'none';
+      }}
+    }} catch(e) {{}}
+  }}
+  syncBnavBadge();
+  setInterval(syncBnavBadge, 3000);
+
+  if (bnavSavedBtn) {{
+    bnavSavedBtn.addEventListener('click', function() {{
+      var mainSavedBtn = document.getElementById('saved-nav-btn');
+      if (mainSavedBtn) mainSavedBtn.click();
+    }});
+  }}
+
+  // Bottom nav scroll spy
+  var bnavItems = document.querySelectorAll('.nuzu-bottom-nav-item[data-section]');
+  var sections  = Array.from(bnavItems).map(function(item) {{
+    return document.getElementById(item.getAttribute('data-section'));
+  }});
+
+  function bnavScrollSpy() {{
+    var scrollY = window.pageYOffset + 120;
+    var active  = null;
+    for (var i = sections.length - 1; i >= 0; i--) {{
+      if (sections[i] && sections[i].offsetTop <= scrollY) {{
+        active = bnavItems[i]; break;
+      }}
+    }}
+    bnavItems.forEach(function(item) {{ item.classList.remove('active'); }});
+    if (active) active.classList.add('active');
+  }}
+  window.addEventListener('scroll', bnavScrollSpy, {{ passive: true }});
+  bnavScrollSpy();
+
+  // Bottom nav tap: smooth scroll + collapse check
+  bnavItems.forEach(function(item) {{
+    item.addEventListener('click', function(e) {{
+      var sectionId = item.getAttribute('data-section');
+      if (!sectionId) return;
+      e.preventDefault();
+      var el = document.getElementById(sectionId);
+      if (!el) return;
+      var colEl = document.getElementById(sectionId + '-cols');
+      if (colEl && colEl.classList.contains('collapsed')) {{
+        colEl.classList.remove('collapsed');
+        var colBtn = document.querySelector('[data-target="' + sectionId + '-cols"]');
+        if (colBtn) colBtn.innerHTML = '&#9660;';
+      }}
+      var top = el.getBoundingClientRect().top + window.pageYOffset - 56;
+      window.scrollTo({{ top: top, behavior: 'smooth' }});
+    }});
+  }});
+}})();
 
 // ── In-App Article Reader ──
 (function() {{
@@ -4618,6 +4794,143 @@ document.addEventListener('DOMContentLoaded', function() {{
   }});
 }})();
 
+// ── Web Share API ──
+(function() {{
+  if (!navigator.share) return;
+  document.addEventListener('click', function(e) {{
+    var btn = e.target.closest('.share-btn');
+    if (!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    var title = btn.getAttribute('data-title') || 'NUZU News';
+    var url   = btn.getAttribute('data-link')  || window.location.href;
+    navigator.share({{ title: 'NUZU News: ' + title, url: url }}).catch(function() {{}});
+  }});
+}})();
+
+// ── Haptic feedback (Android TWA) ──
+function nuzu_vibrate(ms) {{
+  try {{ if (navigator.vibrate) navigator.vibrate(ms || 30); }} catch(e) {{}}
+}}
+document.addEventListener('click', function(e) {{
+  if (e.target.closest('.bookmark-btn')) nuzu_vibrate(40);
+  if (e.target.closest('.cluster-toggle-btn')) nuzu_vibrate(20);
+}});
+
+// ── Light/dark mode: smooth transition ──
+(function() {{
+  var style = document.createElement('style');
+  style.textContent = 'body {{ transition: background 0.22s ease, color 0.22s ease; }} .cluster, .headline, .top-story-card {{ transition: background 0.22s ease, border-color 0.22s ease; }}';
+  document.head.appendChild(style);
+}})();
+
+// ── Swipe-to-save gesture (mobile) ──
+(function() {{
+  if (window.innerWidth > 900) return;
+  var startX = 0; var startY = 0; var target = null;
+  document.addEventListener('touchstart', function(e) {{
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+    target = e.target.closest('.headline, .cluster-lead');
+  }}, {{ passive: true }});
+  document.addEventListener('touchend', function(e) {{
+    if (!target) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    var dy = Math.abs(e.changedTouches[0].clientY - startY);
+    if (Math.abs(dx) < 60 || dy > 40) return;
+    var btn = target.querySelector('.bookmark-btn');
+    if (!btn) return;
+    if (dx > 60) {{ btn.click(); nuzu_vibrate(50); }}
+    target = null;
+  }}, {{ passive: true }});
+}})();
+
+// ── In-app rating prompt (after 3rd session) ──
+(function() {{
+  try {{
+    var RKEY = 'nuzu_sessions';
+    var sessions = parseInt(localStorage.getItem(RKEY) || '0', 10) + 1;
+    localStorage.setItem(RKEY, sessions);
+    if (sessions !== 3) return;
+    setTimeout(function() {{
+      if (window.matchMedia('(display-mode: standalone)').matches ||
+          window.matchMedia('(display-mode: minimal-ui)').matches) {{
+        // TWA / installed PWA — show native prompt if available
+        if (typeof digitalGoods !== 'undefined' || window.Android) return; // handled natively
+      }}
+      var toast = document.createElement('div');
+      toast.id = 'nuzu-rating-toast';
+      toast.setAttribute('role', 'dialog');
+      toast.setAttribute('aria-label', 'Rate NUZU News');
+      toast.style.cssText = [
+        'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
+        'background:#0A1535','border:1px solid #1E4FD8','border-radius:10px',
+        'padding:18px 22px','z-index:9999','box-shadow:0 4px 24px rgba(0,0,0,0.6)',
+        'text-align:center','max-width:300px','width:90%','animation:slideUp 0.3s ease'
+      ].join(';');
+      toast.innerHTML = [
+        '<style>@keyframes slideUp{{from{{opacity:0;transform:translateX(-50%) translateY(20px)}}to{{opacity:1;transform:translateX(-50%) translateY(0)}}}}</style>',
+        '<p style="color:#fff;font-weight:bold;margin-bottom:6px;font-size:1em">Enjoying NUZU? &#11088;</p>',
+        '<p style="color:#5577AA;font-size:0.82em;margin-bottom:14px;line-height:1.5">A quick rating helps us reach more readers. Takes 5 seconds.</p>',
+        '<div style="display:flex;gap:10px;justify-content:center">',
+        '<button id="nuzu-rate-yes" style="background:#1E4FD8;color:#fff;border:none;border-radius:6px;padding:9px 18px;font-size:0.88em;font-weight:bold;cursor:pointer">Rate Now</button>',
+        '<button id="nuzu-rate-no" style="background:none;color:#5577AA;border:1px solid #1A2A4A;border-radius:6px;padding:9px 14px;font-size:0.82em;cursor:pointer">Maybe Later</button>',
+        '</div>'
+      ].join('');
+      document.body.appendChild(toast);
+      document.getElementById('nuzu-rate-yes').onclick = function() {{
+        nuzu_vibrate(30);
+        window.open('https://play.google.com/store/apps/details?id=com.nuzu.news', '_blank', 'noopener');
+        toast.remove(); try {{ localStorage.setItem('nuzu_rated','1'); }} catch(ex) {{}}
+      }};
+      document.getElementById('nuzu-rate-no').onclick = function() {{ toast.remove(); }};
+    }}, 45000);
+  }} catch(ex) {{}}
+}})();
+
+// ── SW update notification + periodic sync registration ──
+(function() {{
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.ready.then(function(reg) {{
+    // Register periodic sync if supported
+    if ('periodicSync' in reg) {{
+      reg.periodicSync.register('nuzu-headlines-refresh', {{ minInterval: 60 * 60 * 1000 }}).catch(function() {{}});
+    }}
+    // Listen for SW telling us new content is available
+    navigator.serviceWorker.addEventListener('message', function(e) {{
+      if (e.data && e.data.type === 'NUZU_UPDATE') showRefreshToast();
+    }});
+    // Check for new SW waiting
+    reg.addEventListener('updatefound', function() {{
+      var newWorker = reg.installing;
+      newWorker.addEventListener('statechange', function() {{
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {{
+          showRefreshToast();
+        }}
+      }});
+    }});
+  }}).catch(function() {{}});
+}})();
+
+// ── Open saved panel if URL param present (from manifest shortcut) ──
+(function() {{
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('panel') === 'saved') {{
+    setTimeout(function() {{
+      var btn = document.getElementById('saved-nav-btn');
+      if (btn) btn.click();
+    }}, 800);
+  }}
+  var section = params.get('section');
+  if (section) {{
+    setTimeout(function() {{
+      var el = document.getElementById('section-' + section);
+      if (el) {{
+        var top = el.getBoundingClientRect().top + window.pageYOffset - 60;
+        window.scrollTo({{top: top, behavior: 'smooth'}});
+      }}
+    }}, 600);
+  }}
+}})();
+
 }}); // end DOMContentLoaded
 </script>
 """)
@@ -4938,16 +5251,25 @@ try:
             {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
         ],
         "shortcuts": [
-            {"name": "US News",      "url": "/NUZU/#section-us",       "description": "Latest US political news"},
-            {"name": "World",        "url": "/NUZU/#section-world",    "description": "Global news coverage"},
-            {"name": "Breaking",     "url": "/NUZU/#section-mideast",  "description": "Middle East coverage"},
-            {"name": "Business",     "url": "/NUZU/#section-business", "description": "Markets and business news"},
+            {"name": "US News",      "short_name": "US",      "url": "/NUZU/?section=us&source=shortcut",       "description": "Latest US political and national news",   "icons": [{"src": "icons/icon-96.png", "sizes": "96x96"}]},
+            {"name": "World News",   "short_name": "World",   "url": "/NUZU/?section=world&source=shortcut",    "description": "Global news and international events",    "icons": [{"src": "icons/icon-96.png", "sizes": "96x96"}]},
+            {"name": "Saved Articles","short_name": "Saved",  "url": "/NUZU/?panel=saved&source=shortcut",      "description": "Your bookmarked articles",                 "icons": [{"src": "icons/icon-96.png", "sizes": "96x96"}]},
+            {"name": "Breaking News", "short_name": "Breaking","url": "/NUZU/?section=mideast&source=shortcut", "description": "Middle East and breaking coverage",        "icons": [{"src": "icons/icon-96.png", "sizes": "96x96"}]},
         ],
         "screenshots": [
-            {"src": "screenshots/desktop.png", "sizes": "1280x720",  "type": "image/png", "form_factor": "wide"},
-            {"src": "screenshots/mobile.png",  "sizes": "390x844",   "type": "image/png", "form_factor": "narrow"},
+            {"src": "screenshots/phone-1.png",  "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "NUZU News — Breaking headlines"},
+            {"src": "screenshots/phone-2.png",  "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "NUZU News — Middle East coverage"},
+            {"src": "screenshots/tablet-1.png", "sizes": "1600x2560", "type": "image/png", "form_factor": "wide",   "label": "NUZU News — Full desktop view"},
         ],
+        "id": "/NUZU/",
+        "display_override": ["standalone", "minimal-ui", "browser"],
+        "share_target": {
+            "action": "/NUZU/share-target/",
+            "method": "GET",
+            "params": {"title": "title", "text": "text", "url": "url"}
+        },
         "prefer_related_applications": False,
+        "related_applications": [],
     }
     with open(MANIFEST_FILE, "w", encoding="utf-8") as mf:
         _json.dump(manifest, mf, indent=2)
@@ -4955,65 +5277,149 @@ try:
 except Exception as e:
     print(f"WARNING: manifest.json not saved: {str(e)}")
 
-# Generate service worker (sw.js) for offline support + Play Store TWA
+# Generate service worker (sw.js) v2.0 — offline, push, background sync
 SW_FILE = os.path.join(CURRENT_DIR, "sw.js")
 try:
-    sw_content = """// NUZU News Service Worker v1.2 — PWA / Play Store support
-const CACHE_NAME = 'nuzu-cache-v3';
+    sw_content = """// NUZU News Service Worker v2.0
+const CACHE_NAME = 'nuzu-v4';
+const STATIC_CACHE = 'nuzu-static-v4';
 const OFFLINE_URL = '/NUZU/offline.html';
 
-// Assets to pre-cache for offline shell
-const PRE_CACHE = [
+const PRECACHE_URLS = [
   '/NUZU/',
   '/NUZU/index.html',
+  '/NUZU/offline.html',
   '/NUZU/manifest.json',
+  '/NUZU/icons/icon-192.png',
+  '/NUZU/icons/icon-512.png',
 ];
 
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(PRE_CACHE).catch(() => {}))
+    caches.open(STATIC_CACHE).then(cache =>
+      cache.addAll(PRECACHE_URLS).catch(() => {})
+    )
   );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-    ))
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(k => k !== CACHE_NAME && k !== STATIC_CACHE).map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  // Skip non-GET and cross-origin requests
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  if (url.origin !== location.origin) return;
+  if (url.origin !== location.origin &&
+      !url.hostname.includes('youtube.com') &&
+      !url.hostname.includes('ytimg.com')) return;
+
+  if (event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(event.request).then(cached => cached || caches.match(OFFLINE_URL))
+        )
+    );
+    return;
+  }
+
+  if (url.pathname.endsWith('feed.json')) {
+    event.respondWith(
+      Promise.race([
+        fetch(event.request, { cache: 'no-cache' }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+      ])
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   event.respondWith(
-    fetch(event.request, { cache: 'no-cache' })
-      .then(response => {
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
         if (response.ok) {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          caches.open(STATIC_CACHE).then(c => c.put(event.request, clone));
         }
         return response;
-      })
-      .catch(() => caches.match(event.request).then(cached => cached || caches.match('/NUZU/')))
+      }).catch(() => new Response('', { status: 404 }));
+    })
   );
 });
 
-// Background sync for news refresh
+self.addEventListener('push', event => {
+  let data = { title: 'NUZU Breaking News', body: 'New headlines available', url: '/NUZU/' };
+  try { if (event.data) data = { ...data, ...event.data.json() }; } catch(e) {}
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/NUZU/icons/icon-192.png',
+      badge: '/NUZU/icons/icon-96.png',
+      tag: 'nuzu-breaking',
+      renotify: true,
+      data: { url: data.url },
+      actions: [
+        { action: 'open', title: 'Read Now' },
+        { action: 'dismiss', title: 'Dismiss' }
+      ]
+    })
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  if (event.action === 'dismiss') return;
+  const url = event.notification.data?.url || '/NUZU/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.includes('/NUZU/') && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});
+
 self.addEventListener('periodicsync', event => {
-  if (event.tag === 'nuzu-refresh') {
-    event.waitUntil(fetch('/NUZU/feed.json').then(r => r.json()).catch(() => {}));
+  if (event.tag === 'nuzu-headlines-refresh') {
+    event.waitUntil(
+      fetch('/NUZU/feed.json?sw=1&_=' + Date.now())
+        .then(r => r.json())
+        .then(data => self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(client => client.postMessage({ type: 'NUZU_UPDATE', updated: data.updated }));
+        }))
+        .catch(() => {})
+    );
   }
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 """;
     with open(SW_FILE, "w", encoding="utf-8") as sf:
         sf.write(sw_content)
-    print(f"SUCCESS: sw.js saved (service worker)")
+    print(f"SUCCESS: sw.js v2.0 saved")
 except Exception as e:
     print(f"WARNING: sw.js not saved: {str(e)}")
 
