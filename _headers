@@ -3,46 +3,21 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  X-XSS-Protection: 1; mode=block
-
-/index.html
-  Cache-Control: public, max-age=720, stale-while-revalidate=60
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 /feed.json
-  Cache-Control: public, max-age=720, stale-while-revalidate=30
-  Access-Control-Allow-Origin: *
-  Content-Type: application/json; charset=utf-8
-
-/feed.xml
   Cache-Control: public, max-age=720
   Access-Control-Allow-Origin: *
-  Content-Type: application/rss+xml; charset=utf-8
 
 /sw.js
   Cache-Control: no-cache, no-store, must-revalidate
-  Content-Type: application/javascript
 
 /manifest.json
   Cache-Control: public, max-age=86400
-  Content-Type: application/manifest+json; charset=utf-8
-
-/.well-known/assetlinks.json
-  Cache-Control: public, max-age=3600
-  Content-Type: application/json
-  Access-Control-Allow-Origin: *
-
-/icons/*
-  Cache-Control: public, max-age=2592000, immutable
-
-/screenshots/*
-  Cache-Control: public, max-age=2592000, immutable
+  Content-Type: application/manifest+json
 
 /privacy.html
   Cache-Control: public, max-age=86400
 
 /terms.html
-  Cache-Control: public, max-age=86400
-
-/offline.html
   Cache-Control: public, max-age=86400
