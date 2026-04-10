@@ -1,107 +1,84 @@
 {
-  "name": "NUZU News",
-  "short_name": "NUZU",
-  "description": "NUZU: Real News in Real Time. Every story, every source, right now. Breaking news aggregated from 200+ trusted outlets across US, World, Middle East, Tech, Business, Sports & Culture.",
-  "start_url": "/TheMitchellPost/",
-  "scope": "/TheMitchellPost/",
+  "name": "NUZU News — Real News in Real Time",
+  "short_name": "NUZU News",
+  "description": "Breaking headlines from 200+ trusted sources. US politics, world events, tech, business, sports, and culture — updated every hour. No algorithm, no bias. Just news.",
+  "start_url": "/NUZU/?source=pwa",
+  "scope": "/NUZU/",
   "display": "standalone",
-  "orientation": "portrait",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
   "theme_color": "#0D1B4B",
-  "background_color": "#0D1B4B",
+  "background_color": "#070F2B",
   "lang": "en-US",
   "dir": "ltr",
   "categories": ["news"],
-  "iarc_rating_id": "",
+  "id": "/NUZU/",
   "icons": [
-    {
-      "src": "icons/icon-48.png",
-      "sizes": "48x48",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icons/icon-48.png",  "sizes": "48x48",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "screenshots": [
     {
-      "src": "screenshots/screenshot-1.png",
+      "src": "screenshots/phone-1.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "NUZU Breaking News Feed"
+      "label": "NUZU News — Breaking headlines"
     },
     {
-      "src": "screenshots/screenshot-2.png",
+      "src": "screenshots/phone-2.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "NUZU Most Reported On"
+      "label": "NUZU News — Middle East coverage"
+    },
+    {
+      "src": "screenshots/tablet-1.png",
+      "sizes": "1600x2560",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "NUZU News — Full desktop view"
     }
   ],
   "shortcuts": [
     {
       "name": "US News",
       "short_name": "US",
-      "description": "Latest US politics and national news",
-      "url": "/TheMitchellPost/#section-us",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Middle East",
-      "short_name": "Mid East",
-      "description": "Middle East breaking news",
-      "url": "/TheMitchellPost/#section-mideast",
+      "url": "/NUZU/?section=us&source=shortcut",
+      "description": "Latest US political and national news",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "World News",
       "short_name": "World",
-      "description": "Global news coverage",
-      "url": "/TheMitchellPost/#section-world",
+      "url": "/NUZU/?section=world&source=shortcut",
+      "description": "Global news and international events",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Sports",
-      "short_name": "Sports",
-      "description": "Live sports news and scores",
-      "url": "/TheMitchellPost/#section-sports",
+      "name": "Saved Articles",
+      "short_name": "Saved",
+      "url": "/NUZU/?panel=saved&source=shortcut",
+      "description": "Your bookmarked articles",
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
+  "related_applications": [],
   "prefer_related_applications": false,
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.nuzu.news",
-      "id": "com.nuzu.news"
+  "share_target": {
+    "action": "/NUZU/share-target/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
     }
-  ]
+  }
 }
